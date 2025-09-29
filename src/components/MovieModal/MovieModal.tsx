@@ -70,50 +70,62 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
       aria-modal="true"
       onClick={handleBackdropClick}
     >
-      {" "}
+           {" "}
       <div className={css.modal}>
-        {/* Кнопка закрытия */}{" "}
+               {" "}
+        {/* Кнопка закрытия: Используем "X" для лучшего центрирования */}       {" "}
         <button
           className={css.closeButton}
           aria-label="Close modal"
           onClick={onClose}
         >
-                    &times;        {" "}
+                    X        {" "}
         </button>
-        {/* Фоновое изображение */}{" "}
+                {/* Фоновое изображение */}       {" "}
         <img
           src={imageUrl}
           alt={movie.title}
           className={css.image}
           loading="lazy"
         />
+               {" "}
         <div className={css.content}>
-          <h2 className={css.title}>{movie.title}</h2>{" "}
-          {movie.tagline && <p className={css.tagline}>{movie.tagline}</p>}
-          <p className={css.overview}>{movie.overview}</p>{" "}
+                    <h2 className={css.title}>{movie.title}</h2>         {" "}
+          {movie.tagline && <p className={css.tagline}>{movie.tagline}</p>}     
+              <p className={css.overview}>{movie.overview}</p>         {" "}
           <div className={css.detailsGrid}>
-            {" "}
+                       {" "}
             <p>
-              <strong>Рейтинг:</strong> {movie.vote_average.toFixed(1)}/10{" "}
-            </p>{" "}
+                            <strong>Рейтинг:</strong>{" "}
+              {movie.vote_average.toFixed(1)}/10            {" "}
+            </p>
+                       {" "}
             <p>
-              <strong>Дата выхода:</strong> {movie.release_date}{" "}
-            </p>{" "}
+                            <strong>Дата выхода:</strong> {movie.release_date} 
+                       {" "}
+            </p>
+                       {" "}
             {movie.runtime !== null && (
               <p>
-                <strong>Время:</strong> {movie.runtime} мин.
+                                <strong>Время:</strong> {movie.runtime} мин.    
+                         {" "}
               </p>
-            )}{" "}
+            )}
+                       {" "}
             {movie.genres && movie.genres.length > 0 && (
               <p className={css.genres}>
-                <strong>Жанры:</strong>{" "}
-                {movie.genres.map((g) => g.name).join(", ")}
+                                <strong>Жанры:</strong>               {" "}
+                {movie.genres.map((g: any) => g.name).join(", ")}             {" "}
               </p>
-            )}{" "}
-          </div>{" "}
-        </div>{" "}
-      </div>{" "}
+            )}
+                     {" "}
+          </div>
+                 {" "}
+        </div>
+             {" "}
+      </div>
+         {" "}
     </div>,
-    modalRoot
+    modalRoot!
   );
 }
