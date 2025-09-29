@@ -19,4 +19,5 @@ export interface MovieDetails extends Movie {
   runtime: number | null;
   genres: Genre[];
   tagline: string | null;
+  backdrop_path: string | null; // <--- ДОБАВЛЕНО ДЛЯ ИСПРАВЛЕНИЯ ОШИБКИ TS2339
 }
