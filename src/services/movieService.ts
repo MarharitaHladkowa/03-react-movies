@@ -1,42 +1,64 @@
-import { type AxiosResponse } from "axios";
-// ИЗМЕНЕНИЕ: Импортируем MovieDetails для новой функции
-import type { Movie, MovieDetails } from "../types/movie";
 import api from "../components/Api/Api";
+
+// ----------------------------------------------------------------------
+// 1. АРХИТЕКТУРА ТИПОВ
+// MovieDetails и Genre определены и экспортированы здесь (как API-специфичные)
+// ----------------------------------------------------------------------
+
+export interface Genre {
+  id: number;
+  name: string;
+}
+
+// Расширенный тип, который приходит при запросе деталей фильма
+export interface MovieDetails {
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string | null;
+  release_date: string;
+  vote_average: number;
+  // Дополнительные поля для модального окна
+  runtime: number | null;
+  genres: Genre[];
+  tagline: string | null;
+  backdrop_path: string | null;
+}
 
 // Интерфейс для ответа TMDB, чтобы типизировать поле 'results'
 interface TmdbResponse {
   page: number;
-  results: Movie[];
+  results: MovieDetails[]; // Используем MovieDetails, т.к. это полный тип
   total_pages: number;
   total_results: number;
 }
 
-// Интерфейс для ответа TMDB с деталями (MovieDetails расширяет стандартный ответ)
-interface TmdbMovieDetails extends MovieDetails {
-  // TMDB возвращает объект, который соответствует MovieDetails
-}
+// ----------------------------------------------------------------------
+// 2. ФУНКЦИИ API С ЯВНЫМИ ДЖЕНЕРИКАМИ AXIOS
+// ----------------------------------------------------------------------
 
 /**
  * Функция для поиска фильмов по ключевому слову.
  * @param searchQuery Строка для поиска.
  * @param page Номер страницы результатов.
- * @returns Промис, который разрешается массивом объектов Movie (Promise<Movie[]>).
+ * @returns Промис, который разрешается массивом объектов MovieDetails.
  */
 export async function fetchMovies(
   searchQuery: string,
   page: number = 1
-): Promise<Movie[]> {
+): Promise<MovieDetails[]> {
   if (!searchQuery) {
     return [];
-  } // Типизируем ответ с помощью AxiosResponse<TmdbResponse>
+  }
 
-  const response: AxiosResponse<TmdbResponse> = await api.get("/search/movie", {
+  // ИСПРАВЛЕНИЕ: Использование явного дженерика api.get<TmdbResponse>
+  const response = await api.get<TmdbResponse>("/search/movie", {
     params: {
       query: searchQuery,
       page: page,
       language: "en-US",
     },
-  }); // Возвращаем только типизированный массив фильмов
+  });
 
   return response.data.results;
 }
@@ -49,16 +71,12 @@ export async function fetchMovies(
 export async function fetchMovieDetails(
   movieId: number
 ): Promise<MovieDetails> {
-  // Запрос к эндпоинту /movie/{movie_id}
-  const response: AxiosResponse<TmdbMovieDetails> = await api.get(
-    `/movie/${movieId}`,
-    {
-      params: {
-        language: "en-US",
-      },
-    }
-  );
+  // ИСПРАВЛЕНИЕ: Использование явного дженерика api.get<MovieDetails>
+  const response = await api.get<MovieDetails>(`/movie/${movieId}`, {
+    params: {
+      language: "en-US",
+    },
+  });
 
-  // Возвращаем объект MovieDetails
   return response.data;
 }

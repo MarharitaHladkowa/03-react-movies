@@ -1,12 +1,11 @@
 import css from "./MovieGrid.module.css";
 import type { Movie } from "../../types/movie";
-// ИСправлено: Должен быть абсолютный импорт из Api.tsx, где экспортируется IMAGE_BASE_URL
 import { IMAGE_BASE_URL } from "../../components/Api/Api";
 
 // Интерфейс для пропсов компонента MovieGrid
 interface MovieGridProps {
   movies: Movie[];
-  onSelect: (movieId: number) => void;
+  onSelect: (movie: Movie) => void;
 }
 
 // Константа для размера постера, рекомендованная TMDB
@@ -29,7 +28,7 @@ export default function MovieGrid({ movies, onSelect }: MovieGridProps) {
       {movies.map((movie) => (
         <li key={movie.id}>
           {/* Обработчик клика передает ID фильма */}
-          <div className={css.card} onClick={() => onSelect(movie.id)}>
+          <div className={css.card} onClick={() => onSelect(movie)}>
             <img
               className={css.image}
               // Формируем полный URL изображения

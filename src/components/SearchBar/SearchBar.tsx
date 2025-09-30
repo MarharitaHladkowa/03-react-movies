@@ -5,14 +5,14 @@ import { toast } from "react-hot-toast";
 
 // Интерфейс для пропсов SearchBar: функция, которая принимает строку запроса
 interface SearchBarProps {
-  onSearchSubmit: (query: string) => void;
+  onSubmit: (query: string) => void;
 }
 
 /**
  * SearchBar – компонент формы поиска.
  * Управляет вводом, предотвращает отправку пустых строк и вызывает колбэк с запросом.
  */
-export default function SearchBar({ onSearchSubmit }: SearchBarProps) {
+export default function SearchBar({ onSubmit }: SearchBarProps) {
   const [query, setQuery] = useState("");
 
   // Обработчик отправки формы
@@ -29,7 +29,7 @@ export default function SearchBar({ onSearchSubmit }: SearchBarProps) {
     }
 
     // Вызываем функцию обратного вызова с обрезанным запросом
-    onSearchSubmit(trimmedQuery);
+    onSubmit(trimmedQuery);
 
     // Очищаем поле ввода после успешного поиска
     setQuery("");
