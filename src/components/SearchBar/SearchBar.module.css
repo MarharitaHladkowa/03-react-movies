@@ -2,11 +2,9 @@
 
 .header {
   padding: 20px;
-  /* Изменен фон на более темный, но отдельный оттенок (#1f1f1f) */
   background-color: #1f1f1f;
   border-bottom: none; /* Убираем границу, так как она не нужна на темном фоне */
   margin-bottom: 20px;
-  /* Убеждаемся, что header занимает всю ширину для центрирования содержимого */
   width: 100%;
   display: flex;
   justify-content: center; /* Центрирует .container внутри .header */
@@ -26,7 +24,7 @@
   gap: 20px;
 }
 
-.form {
+.searchForm {
   display: flex;
   gap: 8px;
   flex-wrap: nowrap;
@@ -56,4 +54,14 @@
 
 .button:hover {
   background-color: #004182;
+}
+.visuallyHidden {
+  position: absolute;
+  clip: rect(0 0 0 0);
+  margin: -1px;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  border: 0;
+  overflow: hidden;
 }

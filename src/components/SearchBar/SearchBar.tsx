@@ -1,57 +1,51 @@
-import { useState } from "react";
+import { useId } from "react";
 import css from "./SearchBar.module.css";
 import { FiSearch } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 
 // Интерфейс для пропсов SearchBar: функция, которая принимает строку запроса
 interface SearchBarProps {
-  onSubmit: (query: string) => void;
+  action: (formData: FormData) => void;
 }
+export default function SearchBar({ action }: SearchBarProps) {
+  // 1. Используем useId для доступности (Accessibility)
+  const searchInputId = useId();
 
-/**
- * SearchBar – компонент формы поиска.
- * Управляет вводом, предотвращает отправку пустых строк и вызывает колбэк с запросом.
- */
-export default function SearchBar({ onSubmit }: SearchBarProps) {
-  const [query, setQuery] = useState("");
+  const handleFormAction = (formData: FormData) => {
+    // 3. Извлекаем значение поля с именем "query" из объекта FormData
+    const queryValue = formData.get("query") as string;
 
-  // Обработчик отправки формы
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    // Обрезаем пробелы с краев и проверяем, что запрос не пуст
-    const trimmedQuery = query.trim();
+    // 4. Обрезаем пробелы
+    const trimmedQuery = queryValue.trim();
 
     if (!trimmedQuery) {
-      // Показываем ошибку, если запрос пуст
+      // 5. Показываем ошибку, если запрос пуст
       toast.error("Please enter a search query.");
       return;
     }
 
-    // Вызываем функцию обратного вызова с обрезанным запросом
-    onSubmit(trimmedQuery);
-
-    // Очищаем поле ввода после успешного поиска
-    setQuery("");
+    // 6. Вызываем пропс action с объектом FormData
+    // Мы передаем данные в App.tsx
+    action(formData);
   };
-
-  // Обработчик изменения поля ввода
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-  };
-
   return (
     <header className={css.header}>
-      <form className={css.searchForm} onSubmit={handleSubmit}>
+      {/* ПРИМЕНЯЕМ: Атрибут action с нашей функцией */}
+      <form className={css.searchForm} action={handleFormAction}>
+        {/* Добавляем скрытую метку для доступности (Accessibility) */}
+        <label htmlFor={searchInputId} className={css.visuallyHidden}>
+          Search for movies
+        </label>
+
         <input
           type="text"
           name="query"
+          id={searchInputId} // <-- Связывание через useId
           autoComplete="off"
           autoFocus
           placeholder="Search for movies..."
           className={css.input}
-          value={query}
-          onChange={handleChange}
+          defaultValue=""
         />
         <button type="submit" className={css.button}>
           {/* Иконка поиска из react-icons */}
@@ -61,3 +55,4 @@ export default function SearchBar({ onSubmit }: SearchBarProps) {
     </header>
   );
 }
+// ...
