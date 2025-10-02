@@ -1,28 +1,42 @@
 import api from "../components/Api/Api";
-// ИСПРАВЛЕНИЕ: Импортируем типы Movie и MovieDetails из types/movie.ts
-import {
-  type Movie, // Базовый тип для списка
-  type MovieDetails, // Полный тип для модального окна
-  type TmdbResponse, // Тип ответа API
-} from "../types/movie";
+// Импортируем только базовый тип Movie
+import { type Movie } from "../types/movie";
 
 // ----------------------------------------------------------------------
-// 2. ФУНКЦИИ API С ЯВНЫМИ ДЖЕНЕРИКАМИ AXIOS
+// ВОССТАНОВЛЕННЫЕ ТИПЫ
+// ----------------------------------------------------------------------
+export interface Genre {
+  id: number;
+  name: string;
+}
+
+export interface MovieDetails extends Movie {
+  runtime: number | null;
+  genres: Genre[];
+  tagline: string | null;
+  backdrop_path: string | null;
+}
+
+export interface TmdbResponse {
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
 // ----------------------------------------------------------------------
 
-/**
- * Функция для поиска фильмов по ключевому слову.
- * @param searchQuery Строка для поиска.
- * @param page Номер страницы результатов.
- * @returns Промис, который разрешается массивом объектов Movie.
- */
+// Предполагаем, что переменная окружения (Bearer Token) доступна
+const VITE_TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+
+// ... fetchMovies остается с логикой Authorization в headers ...
+
 export async function fetchMovies(
   searchQuery: string,
   page: number = 1
 ): Promise<Movie[]> {
   if (!searchQuery) {
     return [];
-  } // Использование явного дженерика api.get<TmdbResponse> для строгого типизирования ответа
+  }
 
   const response = await api.get<TmdbResponse>("/search/movie", {
     params: {
@@ -30,20 +44,18 @@ export async function fetchMovies(
       page: page,
       language: "en-US",
     },
-  }); // Возвращаем только массив результатов, типизированный как Movie[]
+    headers: {
+      Authorization: `Bearer ${VITE_TMDB_API_KEY}`, // <-- Используем правильное имя
+    },
+  });
 
   return response.data.results;
 }
 
-/**
- * Функция для получения подробной информации о фильме по его ID.
- * @param movieId ID фильма.
- * @returns Промис, который разрешается полным объектом MovieDetails.
- */
+// ВОССТАНОВЛЕННАЯ ФУНКЦИЯ
 export async function fetchMovieDetails(
   movieId: number
 ): Promise<MovieDetails> {
-  // Использование явного дженерика api.get<MovieDetails> для строгого типизирования
   const response = await api.get<MovieDetails>(`/movie/${movieId}`, {
     params: {
       language: "en-US",

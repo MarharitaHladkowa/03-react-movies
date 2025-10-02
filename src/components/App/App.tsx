@@ -1,47 +1,40 @@
 import { useState } from "react";
-import { fetchMovies } from "../../services/movieService"; // fetchMovieDetails теперь не нужен
+import { fetchMovies } from "../../services/movieService";
 import { Toaster, toast } from "react-hot-toast";
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
-import MovieModal from "../MovieModal/MovieModal";
-import type { Movie } from "../../types/movie"; // MovieDetails теперь не нужен в App
+import MovieModal from "../MovieModal/MovieModal"; // Восстановлено
+import type { Movie } from "../../types/movie";
 import appCss from "./App.module.css";
 
 export default function App() {
-  // 1. Состояния для управления данными и UI
-  const [movies, setMovies] = useState<Movie[]>([]); // Для хранения результатов
-  const [isLoading, setIsLoading] = useState<boolean>(false); // Для индикации загрузки поиска
-  const [error, setError] = useState<string | null>(null); // Для хранения ошибок
-  // ИСПРАВЛЕНО: Храним только ID выбранного фильма
+  // 1. Состояния для управления данными
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  // ВОССТАНОВЛЕНО: Храним ID для модального окна
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
-  // УДАЛЕНО: const [isModalLoading, setIsModalLoading] = useState<boolean>(false);
-
-  // 2. Функции для управления модальным окном
-  // КОРРЕКТНЫЙ КОНТРАКТ: принимает объект Movie, устанавливает его ID
+  // 2. Функции для управления модальным окном (ВОССТАНОВЛЕНЫ)
   const handleMovieSelect = (movie: Movie) => {
-    setSelectedMovieId(movie.id); // Устанавливаем только ID
+    setSelectedMovieId(movie.id);
   };
 
-  // ИСПРАВЛЕНО: Очищаем ID, а не несуществующий selectedMovie
   const handleCloseModal = () => {
-    setSelectedMovieId(null); // Очищаем состояние для закрытия модалки
+    setSelectedMovieId(null);
   };
 
   // 3. Функция для обработки запроса от SearchBar
-  const handleSearchSubmit = async (formData: FormData) => {
-    // ИСПРАВЛЕНО: Закрываем модалку при новом поиске, если она открыта
+  // Использует исправленный контракт: (query: string)
+  const handleSearchSubmit = async (query: string) => {
     setSelectedMovieId(null);
     setMovies([]);
     setError(null);
     setIsLoading(true);
 
-    const query = formData.get("query") as string;
-
     try {
-      // Вызов API (используем await, так как fetchMovies асинхронна)
       const results = await fetchMovies(query);
 
       if (results.length === 0) {
@@ -60,9 +53,9 @@ export default function App() {
   };
 
   return (
-    <div style={{ fontFamily: "Inter, sans-serif" }}>
-      {/* Хедер с формой поиска */}
-      <SearchBar action={handleSearchSubmit} />
+    <div className={appCss.appRoot}>
+      {/* SearchBar: Использует исправленный onSubmit */}
+      <SearchBar onSubmit={handleSearchSubmit} />
       <div>
         {/* 1. Если идет загрузка, показываем Loader */}
         {isLoading && <Loader />}
@@ -74,7 +67,7 @@ export default function App() {
             <div className={appCss.resultsMessage}>
               <p>Found {movies.length} movies.</p>
             </div>
-            {/* Рендерим MovieGrid и передаем данные и обработчик клика */}
+            {/* MovieGrid: onSelect передает ID */}
             <MovieGrid movies={movies} onSelect={handleMovieSelect} />
           </>
         )}
@@ -85,13 +78,12 @@ export default function App() {
           </div>
         )}
       </div>
-      {/* 5. Модальное окно (рендерится, если выбран фильм) */}
+
+      {/* MovieModal: ВОССТАНОВЛЕНА ПЕРЕДАЧА ID */}
       {selectedMovieId !== null && (
         <MovieModal movieId={selectedMovieId} onClose={handleCloseModal} />
       )}
-      {/* УДАЛЕНО: {isModalLoading && <Loader />} */}
 
-      {/* Контейнер для сповіщень React Hot Toast */}
       <Toaster position="top-right" />
     </div>
   );

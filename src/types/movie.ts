@@ -1,9 +1,6 @@
-export interface Genre {
-  id: number;
-  name: string;
-}
+// types/movie.ts
 
-// Базовый интерфейс для фильма (используется в App.tsx для списка)
+// Базовый интерфейс для фильма (оставлен согласно заданию)
 export interface Movie {
   id: number;
   title: string;
@@ -11,23 +8,6 @@ export interface Movie {
   poster_path: string | null;
   release_date: string;
   vote_average: number;
-  // backdrop_path здесь отсутствует
+  backdrop_path: string | null;
 }
-
-// Расширенный тип, который приходит при запросе деталей фильма
-export interface MovieDetails extends Movie {
-  // Дополнительные поля, которых нет в базовом списке (Movie)
-  runtime: number | null;
-  genres: Genre[];
-  tagline: string | null;
-  backdrop_path: string | null; // <--- Перемещен сюда
-}
-
-// Интерфейс для ответа TMDB при поиске
-export interface TmdbResponse {
-  page: number;
-  // Используем базовый тип Movie для результатов поиска
-  results: Movie[];
-  total_pages: number;
-  total_results: number;
-}
+// Остальные интерфейсы удалены.

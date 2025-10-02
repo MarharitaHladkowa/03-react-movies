@@ -5,6 +5,7 @@ import { IMAGE_BASE_URL } from "../../components/Api/Api";
 // Интерфейс для пропсов компонента MovieGrid
 interface MovieGridProps {
   movies: Movie[];
+  // onSelect ВОЗВРАЩЕН: принимает полный объект Movie
   onSelect: (movie: Movie) => void;
 }
 
@@ -15,8 +16,8 @@ const PLACEHOLDER_URL =
 
 /**
  * MovieGrid – компонент для отображения коллекции фильмов в виде сетки.
- * Рендерится только при наличии фильмов.
  */
+// onSelect ВОЗВРАЩЕН в деструктуризацию
 export default function MovieGrid({ movies, onSelect }: MovieGridProps) {
   // Компонент не рендерится, если массив пуст
   if (movies.length === 0) {
@@ -27,7 +28,7 @@ export default function MovieGrid({ movies, onSelect }: MovieGridProps) {
     <ul className={css.grid}>
       {movies.map((movie) => (
         <li key={movie.id}>
-          {/* Обработчик клика передает ID фильма */}
+          {/* ОБРАБОТЧИК КЛИКА ВОЗВРАЩЕН */}
           <div className={css.card} onClick={() => onSelect(movie)}>
             <img
               className={css.image}
