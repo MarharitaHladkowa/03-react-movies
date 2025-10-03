@@ -1,35 +1,35 @@
 import { useState } from "react";
-import { fetchMovies } from "../../services/movieService";
+import { fetchMovies } from "../../services/movieService"; 
 import { Toaster, toast } from "react-hot-toast";
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
-import MovieModal from "../MovieModal/MovieModal"; // Восстановлено
+import MovieModal from "../MovieModal/MovieModal";
 import type { Movie } from "../../types/movie";
 import appCss from "./App.module.css";
 
 export default function App() {
-  // 1. Состояния для управления данными
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [movies, setMovies] = useState<Movie[]>([]); 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  // ВОССТАНОВЛЕНО: Храним ID для модального окна
-  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+  
+  // КРИТИЧЕСКИЙ ВОЗВРАТ: Храним объект Movie, а не ID
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  // 2. Функции для управления модальным окном (ВОССТАНОВЛЕНЫ)
+  // 2. Функции для управления модальным окном
+  // КРИТИЧЕСКИЙ ВОЗВРАТ: Принимает объект Movie и сохраняет его
   const handleMovieSelect = (movie: Movie) => {
-    setSelectedMovieId(movie.id);
+    setSelectedMovie(movie); 
   };
 
   const handleCloseModal = () => {
-    setSelectedMovieId(null);
+    setSelectedMovie(null); 
   };
 
   // 3. Функция для обработки запроса от SearchBar
-  // Использует исправленный контракт: (query: string)
   const handleSearchSubmit = async (query: string) => {
-    setSelectedMovieId(null);
+    setSelectedMovie(null); // Очищаем выбранный фильм
     setMovies([]);
     setError(null);
     setIsLoading(true);
@@ -41,7 +41,7 @@ export default function App() {
         toast.error(`No movies found for your request: "${query}"`);
       }
 
-      setMovies(results); // Сохраняем полученные фильмы
+      setMovies(results);
     } catch (err) {
       const errorMessage = "An unexpected error occurred during search.";
       setError(errorMessage);
@@ -53,35 +53,30 @@ export default function App() {
   };
 
   return (
-    <div className={appCss.appRoot}>
-      {/* SearchBar: Использует исправленный onSubmit */}
+    <div className={appCss.appRoot}> 
       <SearchBar onSubmit={handleSearchSubmit} />
       <div>
-        {/* 1. Если идет загрузка, показываем Loader */}
         {isLoading && <Loader />}
-        {/* 2. Если есть ошибка, показываем ErrorMessage */}
         {error && <ErrorMessage message={error} />}
-        {/* 3. Если есть фильмы, показываем сетку */}
         {movies.length > 0 && !isLoading && !error && (
           <>
             <div className={appCss.resultsMessage}>
               <p>Found {movies.length} movies.</p>
             </div>
-            {/* MovieGrid: onSelect передает ID */}
+            {/* MovieGrid: Передает полный объект */}
             <MovieGrid movies={movies} onSelect={handleMovieSelect} />
           </>
         )}
-        {/* 4. Начальное сообщение или после пустого поиска */}
         {!isLoading && !error && movies.length === 0 && (
           <div className={appCss.resultsMessage}>
             <p>Enter a keyword to search for movies. </p>
           </div>
         )}
       </div>
-
-      {/* MovieModal: ВОССТАНОВЛЕНА ПЕРЕДАЧА ID */}
-      {selectedMovieId !== null && (
-        <MovieModal movieId={selectedMovieId} onClose={handleCloseModal} />
+      
+      {/* MovieModal: Передает объект Movie */}
+      {selectedMovie !== null && (
+        <MovieModal movie={selectedMovie} onClose={handleCloseModal} /> 
       )}
 
       <Toaster position="top-right" />

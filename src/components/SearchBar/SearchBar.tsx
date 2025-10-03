@@ -35,13 +35,12 @@ export default function SearchBar({ onSubmit }: SearchBarProps) {
   };
   return (
     <header className={css.header}>
-            {/* ИЗМЕНЕНИЕ: Используем onSubmit={handleSubmit} */}     {" "}
+      {/* ИЗМЕНЕНИЕ: Используем onSubmit={handleSubmit} */}{" "}
       <form className={css.searchForm} onSubmit={handleSubmit}>
-               {" "}
+        {" "}
         <label htmlFor={searchInputId} className={css.visuallyHidden}>
-                    Search for movies        {" "}
-        </label>
-               {" "}
+          Search for movies{" "}
+        </label>{" "}
         <input
           type="text"
           name="query"
@@ -51,14 +50,11 @@ export default function SearchBar({ onSubmit }: SearchBarProps) {
           placeholder="Search for movies..."
           className={css.input}
           defaultValue=""
-        />
-               {" "}
+        />{" "}
         <button type="submit" className={css.button}>
-                    <FiSearch size={20} />       {" "}
-        </button>
-             {" "}
-      </form>
-         {" "}
+          <FiSearch size={20} />{" "}
+        </button>{" "}
+      </form>{" "}
     </header>
   );
 }

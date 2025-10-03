@@ -28,8 +28,6 @@ export interface TmdbResponse {
 // Предполагаем, что переменная окружения (Bearer Token) доступна
 const VITE_TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
-// ... fetchMovies остается с логикой Authorization в headers ...
-
 export async function fetchMovies(
   searchQuery: string,
   page: number = 1
