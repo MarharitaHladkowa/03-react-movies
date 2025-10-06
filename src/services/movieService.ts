@@ -17,6 +17,7 @@ export interface MovieDetails extends Movie {
   backdrop_path: string | null;
 }
 
+// TmdbResponse - полная структура ответа
 export interface TmdbResponse {
   page: number;
   results: Movie[];
@@ -25,15 +26,17 @@ export interface TmdbResponse {
 }
 // ----------------------------------------------------------------------
 
-// Предполагаем, что переменная окружения (Bearer Token) доступна
+// Переменная окружения для Bearer Token
 const VITE_TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 export async function fetchMovies(
   searchQuery: string,
   page: number = 1
-): Promise<Movie[]> {
+): Promise<TmdbResponse> {
+  // <--- ИЗМЕНЕНИЕ: Тип возврата - TmdbResponse
   if (!searchQuery) {
-    return [];
+    // Возвращаем пустой объект TmdbResponse
+    return { page: 1, results: [], total_pages: 0, total_results: 0 };
   }
 
   const response = await api.get<TmdbResponse>("/search/movie", {
@@ -43,14 +46,13 @@ export async function fetchMovies(
       language: "en-US",
     },
     headers: {
-      Authorization: `Bearer ${VITE_TMDB_API_KEY}`, // <-- Используем правильное имя
+      Authorization: `Bearer ${VITE_TMDB_API_KEY}`,
     },
   });
 
-  return response.data.results;
+  return response.data; // <--- ИЗМЕНЕНИЕ: Возвращаем полный объект data
 }
 
-// ВОССТАНОВЛЕННАЯ ФУНКЦИЯ
 export async function fetchMovieDetails(
   movieId: number
 ): Promise<MovieDetails> {

@@ -2,45 +2,36 @@ import { useId } from "react";
 import css from "./SearchBar.module.css";
 import { FiSearch } from "react-icons/fi";
 import { toast } from "react-hot-toast";
-import React from "react"; // Для типизации события формы
+// React больше не нужен для типизации события
 
-// КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ 1: Проп должен называться onSubmit и принимать строку (string)
+// КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ: Проп должен называться onSubmit и принимать FormData
 interface SearchBarProps {
-  onSubmit: (query: string) => void;
+  onSubmit: (formData: FormData) => void;
 }
 
-// КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ 1: Деструктурируем prop как onSubmit
 export default function SearchBar({ onSubmit }: SearchBarProps) {
-  const searchInputId = useId(); // Переименовываем и меняем сигнатуру для работы с onSubmit
+  const searchInputId = useId(); // action-обработчик, который получает только formData
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    // 1. Предотвращаем стандартное поведение формы
-    event.preventDefault();
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-
+  const handleFormAction = (formData: FormData) => {
     const queryValue = formData.get("query") as string;
     const trimmedQuery = queryValue.trim();
 
     if (!trimmedQuery) {
       toast.error("Please enter a search query.");
       return;
-    } // КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ 2: Вызываем prop как onSubmit(trimmedQuery)
+    } // Вызываем prop, передавая FormData
 
-    onSubmit(trimmedQuery);
-
-    // Очищаем форму
-    form.reset();
+    onSubmit(formData);
   };
   return (
     <header className={css.header}>
-      {/* ИЗМЕНЕНИЕ: Используем onSubmit={handleSubmit} */}{" "}
-      <form className={css.searchForm} onSubmit={handleSubmit}>
-        {" "}
+            {/* ИСПОЛЬЗУЕМ action, как требовалось */}     {" "}
+      <form className={css.searchForm} action={handleFormAction}>
+                       {" "}
         <label htmlFor={searchInputId} className={css.visuallyHidden}>
-          Search for movies{" "}
-        </label>{" "}
+                    Search for movies        {" "}
+        </label>
+                       {" "}
         <input
           type="text"
           name="query"
@@ -50,11 +41,14 @@ export default function SearchBar({ onSubmit }: SearchBarProps) {
           placeholder="Search for movies..."
           className={css.input}
           defaultValue=""
-        />{" "}
+        />
+                       {" "}
         <button type="submit" className={css.button}>
-          <FiSearch size={20} />{" "}
-        </button>{" "}
-      </form>{" "}
+                    <FiSearch size={20} />       {" "}
+        </button>
+             {" "}
+      </form>
+         {" "}
     </header>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchMovies } from "../../services/movieService"; 
+import { fetchMovies } from "../../services/movieService";
 import { Toaster, toast } from "react-hot-toast";
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
@@ -10,38 +10,39 @@ import type { Movie } from "../../types/movie";
 import appCss from "./App.module.css";
 
 export default function App() {
-  const [movies, setMovies] = useState<Movie[]>([]); 
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
-  // КРИТИЧЕСКИЙ ВОЗВРАТ: Храним объект Movie, а не ID
+
+  // КРИТИЧЕСКИЙ ФИКС: Храним объект Movie, а не ID
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   // 2. Функции для управления модальным окном
-  // КРИТИЧЕСКИЙ ВОЗВРАТ: Принимает объект Movie и сохраняет его
   const handleMovieSelect = (movie: Movie) => {
-    setSelectedMovie(movie); 
+    setSelectedMovie(movie);
   };
 
   const handleCloseModal = () => {
-    setSelectedMovie(null); 
+    setSelectedMovie(null);
   };
 
   // 3. Функция для обработки запроса от SearchBar
-  const handleSearchSubmit = async (query: string) => {
+  const handleSearchSubmit = async (formData: FormData) => {
     setSelectedMovie(null); // Очищаем выбранный фильм
     setMovies([]);
     setError(null);
     setIsLoading(true);
 
-    try {
-      const results = await fetchMovies(query);
+    const query = formData.get("query") as string;
 
-      if (results.length === 0) {
+    try {
+      const response = await fetchMovies(query);
+
+      if (response.total_results === 0) {
         toast.error(`No movies found for your request: "${query}"`);
       }
 
-      setMovies(results);
+      setMovies(response.results);
     } catch (err) {
       const errorMessage = "An unexpected error occurred during search.";
       setError(errorMessage);
@@ -53,7 +54,7 @@ export default function App() {
   };
 
   return (
-    <div className={appCss.appRoot}> 
+    <div className={appCss.appRoot}>
       <SearchBar onSubmit={handleSearchSubmit} />
       <div>
         {isLoading && <Loader />}
@@ -63,7 +64,7 @@ export default function App() {
             <div className={appCss.resultsMessage}>
               <p>Found {movies.length} movies.</p>
             </div>
-            {/* MovieGrid: Передает полный объект */}
+            {/* MovieGrid: Передает полный объект Movie */}
             <MovieGrid movies={movies} onSelect={handleMovieSelect} />
           </>
         )}
@@ -73,10 +74,10 @@ export default function App() {
           </div>
         )}
       </div>
-      
-      {/* MovieModal: Передает объект Movie */}
+
+      {/* MovieModal: Передает объект Movie, а не ID */}
       {selectedMovie !== null && (
-        <MovieModal movie={selectedMovie} onClose={handleCloseModal} /> 
+        <MovieModal movie={selectedMovie} onClose={handleCloseModal} />
       )}
 
       <Toaster position="top-right" />
