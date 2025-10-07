@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 
 // КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ: Проп должен называться onSubmit и принимать FormData
 interface SearchBarProps {
-  onSubmit: (formData: FormData) => void;
+  onSubmit: (query: string) => void;
 }
 
 export default function SearchBar({ onSubmit }: SearchBarProps) {
@@ -21,7 +21,7 @@ export default function SearchBar({ onSubmit }: SearchBarProps) {
       return;
     } // Вызываем prop, передавая FormData
 
-    onSubmit(formData);
+    onSubmit(trimmedQuery);
   };
   return (
     <header className={css.header}>

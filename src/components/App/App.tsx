@@ -27,22 +27,21 @@ export default function App() {
   };
 
   // 3. Функция для обработки запроса от SearchBar
-  const handleSearchSubmit = async (formData: FormData) => {
-    setSelectedMovie(null); // Очищаем выбранный фильм
+  const handleSearchSubmit = async (query: string) => {
+    // ИСПРАВЛЕНИЕ: Очищаем НОВОЕ состояние selectedMovie
+    setSelectedMovie(null);
+
     setMovies([]);
     setError(null);
     setIsLoading(true);
-
-    const query = formData.get("query") as string;
-
     try {
-      const response = await fetchMovies(query);
+      const results = await fetchMovies(query);
 
-      if (response.total_results === 0) {
+      if (results.length === 0) {
         toast.error(`No movies found for your request: "${query}"`);
       }
 
-      setMovies(response.results);
+      setMovies(results);
     } catch (err) {
       const errorMessage = "An unexpected error occurred during search.";
       setError(errorMessage);
@@ -52,7 +51,6 @@ export default function App() {
       setIsLoading(false);
     }
   };
-
   return (
     <div className={appCss.appRoot}>
       <SearchBar onSubmit={handleSearchSubmit} />
